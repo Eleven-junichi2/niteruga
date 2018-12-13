@@ -1,4 +1,5 @@
 {
-    "python.pythonPath": "/home/eleven-junichi2/.local/share/virtualenvs/tsukushi-A67O5rWN/bin/python",
-    "python.linting.pylintEnabled": false
+    "python.pythonPath": "~/.local/share/virtualenvs/niteruga-UEAjB4zg/bin/python",
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
 }

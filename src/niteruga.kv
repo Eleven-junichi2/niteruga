@@ -1,0 +1,143 @@
+#:kivy 1.10.1
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#:import Path pathlib.Path
+
+<TextInput>:
+    font_name: "code_input"
+
+<IconBase>:
+    Widget:
+        pos: self.parent.pos
+        size: self.parent.size
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                source: root.icon
+                pos: self.x + root.padding_left, self.y + root.padding_bottom
+                size: self.width - root.padding_right * 2, self.height - root.padding_top * 2
+
+<ChooseFolderPopupLayout>:
+    file_chooser: file_chooser
+    BoxLayout:
+        orientation: "vertical"
+        FileChooserListView:
+            id: file_chooser
+            path: str(Path().home())
+            show_hidden: True
+            dirselect: True
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: dir_name_input.minimum_height
+            TextInput:
+                id: dir_name_input
+                text: file_chooser.selection[0] if file_chooser.selection else ""
+                font_size: 16
+                hint_text: "file_name"
+            Button:
+                text: "Choose"
+                size_hint_x: 0.44
+                on_release:
+                    if root.set_folder(): root.close()
+            Button:
+                text: "Close"
+                size_hint_x: 0.22
+                on_release: root.close()
+
+<ChooseFolderPopup>:
+    size_hint: 0.9, 0.9
+    title: "Click to select the folder."
+
+<ChooseFilePopupLayout>:
+    file_chooser: file_chooser
+    BoxLayout:
+        orientation: "vertical"
+        FileChooserListView:
+            id: file_chooser
+            path: str(Path().home())
+            show_hidden: True
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: dir_name_input.minimum_height
+            TextInput:
+                id: dir_name_input
+                text: file_chooser.selection[0] if file_chooser.selection else ""
+                font_size: 16
+                hint_text: "file_name"
+            Button:
+                text: "Choose"
+                size_hint_x: 0.44
+                on_release:
+                    if root.set_file_path(): root.close()
+            Button:
+                text: "Close"
+                size_hint_x: 0.22
+                on_release: root.close()
+
+<ChooseFilePopup>:
+    size_hint: 0.9, 0.9
+    title: "Click to select the file."
+
+<AlertPopupLayout>:
+    BoxLayout:
+        orientation: "vertical"
+        Label:
+            id: message_label
+            text: root.message
+        Button:
+            text: "Close"
+            on_release: root.close()
+
+<AlertPopup>:
+    size_hint: 0.8, 0.8
+    title: "Message"
+
+<SearchScreen>:
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex("#2E2E2E")
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    searching_place_input: searching_place_input
+    image_to_search_input: image_to_search_input
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10, 10, 10, 10
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: 40
+            TextInput:
+                id: searching_place_input
+                hint_text: "where to search:"
+                multiline: False
+            IconButton:
+                icon: "images/folder_icon.png"
+                padding: 5, 5, 5, 5
+                size_hint_x: None
+                width: self.height
+                on_release: root.show_choose_searching_place()
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: 40
+            TextInput:
+                id: image_to_search_input
+                hint_text: "image to search:"
+                size_hint_y: None
+                height: 40
+            IconButton:
+                icon: "images/folder_icon.png"
+                padding: 5, 5, 5, 5
+                size_hint_x: None
+                width: self.height
+                on_release: root.show_choose_image_to_search()
+        Button:
+            text: "Search"
+            size_hint_y: None
+            height: 40
+            # size_hint_y: 0.2
+            on_release: root.search_image()
