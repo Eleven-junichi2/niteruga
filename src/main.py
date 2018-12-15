@@ -110,6 +110,7 @@ class SearchScreen(Screen):
     # TODO: Fix variable name: image_to_search_input
     searching_place_input = ObjectProperty(None)
     image_to_search_input = ObjectProperty(None)
+    result_image = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -144,24 +145,30 @@ class SearchScreen(Screen):
         elif Path(path).is_dir():
             popup = AlertPopup("It isn't file.")
             popup.open()
-    
-    # def search_and_show_image(self):
-    #     result = self.search_image()
-    #     if result
+
+    def search_and_show_image(self):
+        result = self.search_image()
+        if not result:
+            return
+        self.result_image.source = result
 
     def search_image(self):
         # --- validation
         search_failed = False
-        if not (self.searching_place_input.text or
-                self.image_to_search_input.text):
+        if (not self.searching_place_input.text or
+                not self.image_to_search_input.text):
             search_failed = True
         else:
             searching_place = Path(self.searching_place_input.text)
             image_to_search = Path(self.image_to_search_input.text)
-            if image_to_search.is_file():
-                is_image = (mimetypes.guess_type(str(image_to_search))[0]
-                            in self.image_mime_types)
-            if not (searching_place.is_dir() or is_image):
+            is_image = None
+            if searching_place.exists() and image_to_search.exists():
+                if image_to_search.is_file():
+                    is_image = (mimetypes.guess_type(str(image_to_search))[0]
+                                in self.image_mime_types)
+                if not searching_place.is_dir() or not is_image:
+                    search_failed = True
+            else:
                 search_failed = True
         if search_failed:
             popup = AlertPopup("The input is incorrect or not entered.")
@@ -169,7 +176,6 @@ class SearchScreen(Screen):
             return False
         # ---
         IMAGE_SIZE = (100, 100)
-        print(searching_place, image_to_search)
         image_to_search = str(image_to_search)
         target_img = cv2.imread(image_to_search)
         target_img = cv2.resize(target_img, IMAGE_SIZE)
@@ -180,19 +186,23 @@ class SearchScreen(Screen):
             if (not Path(file_path).is_file() or
                     file_path == image_to_search):
                 continue
-            else:
-                mime = mimetypes.guess_type(file_path)
-                if not(mime[0] in self.image_mime_types):
-                    continue
-                comparing_img_path = str(searching_place / file_path)
-                comparing_img = cv2.imread(comparing_img_path)
-                comparing_img = cv2.resize(comparing_img, IMAGE_SIZE)
-                comparing_hist = cv2.calcHist(
-                    [comparing_img], [0], None, [256], [0, 256])
-                ret = cv2.compareHist(target_hist, comparing_hist, 0)
-                hists[file_path] = ret
-                del comparing_img
+            mime = mimetypes.guess_type(file_path)
+            print(file_path, mime)
+            if not(mime[0] in self.image_mime_types):
+                continue
+            comparing_img_path = str(searching_place / file_path)
+            comparing_img = cv2.imread(comparing_img_path)
+            comparing_img = cv2.resize(comparing_img, IMAGE_SIZE)
+            comparing_hist = cv2.calcHist(
+                [comparing_img], [0], None, [256], [0, 256])
+            ret = cv2.compareHist(target_hist, comparing_hist, 0)
+            hists[file_path] = ret
+            del comparing_img
         del target_img
+        if not hists:
+            popup = AlertPopup("There are no images in the folder.")
+            popup.open()
+            return False
         hists_max = max(hists.values())
         for file_path, hist in hists.items():
             if hists_max == hist:

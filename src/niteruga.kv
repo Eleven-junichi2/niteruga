@@ -103,9 +103,34 @@
             pos: self.pos
     searching_place_input: searching_place_input
     image_to_search_input: image_to_search_input
+    target_image: target_image
+    result_image: result_image
     BoxLayout:
         orientation: "vertical"
         padding: 10, 10, 10, 10
+        BoxLayout:
+            orientation: "horizontal"
+            BoxLayout:
+                orientation: "vertical"
+                Label:
+                    size_hint_y: None
+                    height: 40
+                    font_size: 16
+                    text: "This image's color is similar to:" if result_image.source else ""
+                Image:
+                    id: target_image
+                    source: image_to_search_input.text
+                    on_source: result_image.source = ""
+            BoxLayout:
+                orientation: "vertical"
+                TextInput:
+                    size_hint_y: None
+                    height: 40
+                    font_size: 16
+                    text: result_image.source if result_image.source else ""
+                    multiline: False
+                Image:
+                    id: result_image
         BoxLayout:
             orientation: "horizontal"
             size_hint_y: None
@@ -129,6 +154,7 @@
                 hint_text: "image to search:"
                 size_hint_y: None
                 height: 40
+                multiline: False
             IconButton:
                 icon: "images/folder_icon.png"
                 padding: 5, 5, 5, 5
@@ -140,4 +166,4 @@
             size_hint_y: None
             height: 40
             # size_hint_y: 0.2
-            on_release: root.search_image()
+            on_release: root.search_and_show_image()
