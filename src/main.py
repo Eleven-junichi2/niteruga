@@ -135,7 +135,6 @@ class SearchScreen(Screen):
 
     def set_image_to_search(self, path):
         if Path(path).is_file():
-            print(mimetypes.guess_type(path))
             if mimetypes.guess_type(path)[0] in self.image_mime_types:
                 self.image_to_search_input.text = path
                 return True
@@ -187,7 +186,6 @@ class SearchScreen(Screen):
                     file_path == image_to_search):
                 continue
             mime = mimetypes.guess_type(file_path)
-            print(file_path, mime)
             if not(mime[0] in self.image_mime_types):
                 continue
             comparing_img_path = str(searching_place / file_path)
@@ -213,6 +211,7 @@ class NiterugaApp(App):
     def __init__(self):
         super().__init__()
         self.title = "Niteruga"
+        self.icon = "images/logo.png"
 
     def build(self):
         self.sm = ScreenManager()
