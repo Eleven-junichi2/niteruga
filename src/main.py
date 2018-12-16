@@ -51,6 +51,8 @@ class ChooseFolderPopupLayout(RelativeLayout):
     def set_folder(self):
         if self.file_chooser.selection:
             return self.set_folder_function(self.file_chooser.selection[0])
+        else:
+            return self.set_folder_function(self.file_chooser.path)
 
 
 class ChooseFolderPopup(Popup):
@@ -107,9 +109,8 @@ class AlertPopup(Popup):
 
 
 class SearchScreen(Screen):
-    # TODO: Fix variable name: image_to_search_input
     searching_place_input = ObjectProperty(None)
-    image_to_search_input = ObjectProperty(None)
+    image_path_to_search_input = ObjectProperty(None)
     result_image = ObjectProperty(None)
 
     def __init__(self, **kwargs):
@@ -136,7 +137,7 @@ class SearchScreen(Screen):
     def set_image_to_search(self, path):
         if Path(path).is_file():
             if mimetypes.guess_type(path)[0] in self.image_mime_types:
-                self.image_to_search_input.text = path
+                self.image_path_to_search_input.text = path
                 return True
             else:
                 popup = AlertPopup("It isn't  image or supported files.")
@@ -155,11 +156,11 @@ class SearchScreen(Screen):
         # --- validation
         search_failed = False
         if (not self.searching_place_input.text or
-                not self.image_to_search_input.text):
+                not self.image_path_to_search_input.text):
             search_failed = True
         else:
             searching_place = Path(self.searching_place_input.text)
-            image_to_search = Path(self.image_to_search_input.text)
+            image_to_search = Path(self.image_path_to_search_input.text)
             is_image = None
             if searching_place.exists() and image_to_search.exists():
                 if image_to_search.is_file():
