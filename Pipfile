@@ -11,6 +11,13 @@ autopep8 = "*"
 cython = "*"
 kivy = "*"
 opencv-python = "*"
+docutils = {version = "*",sys_platform = "== 'win32'"}
+pygments = {version = "*",sys_platform = "== 'win32'"}
+pypiwin32 = {version = "*",sys_platform = "== 'win32'"}
+kivy-deps-sdl2 = {version = "*",sys_platform = "== 'win32'"}
+kivy-deps-glew = {version = "*",sys_platform = "== 'win32'"}
+kivy-deps-angle = {version = "*",sys_platform = "== 'win32'"}
+pyinstaller = "*"
 
 [requires]
 python_version = "3.6"
