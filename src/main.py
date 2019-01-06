@@ -108,6 +108,38 @@ class AlertPopup(Popup):
         self.content.message = message
 
 
+class ImageSimilarityChecker:
+    def __init__(self, target_image_path, location_to_search):
+        self.target_image_path = target_image_path
+        self.location_to_search = location_to_search
+        self.__image_mime_types = ("image/png", "image/jpeg",
+                                   "image/gif", "image/bmp")
+        # self.last_result_image_path = ""
+
+    @property
+    def image_mime_types(self):
+        return self.__image_mime_types
+
+    @property
+    def target_image_path(self):
+        return self.target_image_path
+
+    @target_image_path.setter
+    def target_image_path(self, target_image_path):
+        if Path(target_image_path).exists():
+            if Path(target_image_path).is_file():
+                target_image_mime_is_image = (
+                    mimetypes.guess_type(target_image_path)[0]
+                    in self.image_mime_types)
+                if not target_image_mime_is_image:
+                    raise ValueError("The file is not a image")
+            else:
+                raise ValueError("This path does not point to a file.")
+        else:
+            raise ValueError("Image not found the location.")
+        self.target_image_path = target_image_path
+
+
 class SearchScreen(Screen):
     searching_place_input = ObjectProperty(None)
     image_path_to_search_input = ObjectProperty(None)
@@ -131,7 +163,7 @@ class SearchScreen(Screen):
             popup.open()
 
     def show_choose_image_to_search(self):
-        popup = ChooseFolderPopup(self.set_image_to_search)
+        popup = ChooseFilePopup(self.set_image_to_search)
         popup.open()
 
     def set_image_to_search(self, path):
